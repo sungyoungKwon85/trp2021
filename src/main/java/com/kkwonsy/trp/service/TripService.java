@@ -13,8 +13,6 @@ import com.kkwonsy.trp.entity.Trip;
 import com.kkwonsy.trp.exception.ErrorCode;
 import com.kkwonsy.trp.exception.TrpException;
 import com.kkwonsy.trp.model.TripSaveRequest;
-import com.kkwonsy.trp.repository.CityRepository;
-import com.kkwonsy.trp.repository.MemberRepository;
 import com.kkwonsy.trp.repository.TripRepository;
 
 import dto.TripResponseDto;
@@ -26,10 +24,12 @@ import lombok.RequiredArgsConstructor;
 public class TripService {
 
     private final TripRepository tripRepository;
-    private final MemberRepository memberRepository;
-    private final CityRepository cityRepository;
+    private final MemberService memberService;
+    private final CityService cityService;
 
     public TripResponseDto getTrip(Long memberId, Long tripId) throws TrpException {
+        memberService.findMemberOrThrow(memberId);
+
         Trip trip = tripRepository.findByIdAndMemberId(tripId, memberId)
             .orElseThrow(() -> new TrpException(ErrorCode.TRIP_NOT_FOUND));
         return getTripResponseDtoBuild(trip);
@@ -39,10 +39,8 @@ public class TripService {
     public Long saveTrip(Long memberId, TripSaveRequest request) throws TrpException {
         validTripDate(request);
 
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new TrpException(ErrorCode.MEMBER_NOT_FOUND));
-        City city = cityRepository.findById(request.getCityId())
-            .orElseThrow(() -> new TrpException(ErrorCode.CITY_NOT_FOUND));
+        Member member = memberService.findMemberOrThrow(memberId);
+        City city = cityService.findCityOrThrow(request.getCityId());
 
         if (tripRepository.findByMemberIdAndCityId(memberId, request.getCityId()).isPresent()) {
             throw new TrpException(ErrorCode.TRIP_ALREADY_EXIST);

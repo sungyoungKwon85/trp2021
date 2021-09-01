@@ -2,6 +2,8 @@ package dto;
 
 import java.time.LocalDateTime;
 
+import com.kkwonsy.trp.entity.City;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -19,5 +21,14 @@ public class CityResponseDto {
         this.name = name;
         this.createdAt = createdAt;
         this.lastModifiedAt = lastModifiedAt;
+    }
+
+    public static CityResponseDto buildFrom(City city) {
+        return CityResponseDto.builder()
+            .id(city.getId())
+            .name(city.getName())
+            .createdAt(city.getCreatedAt())
+            .lastModifiedAt(city.getLastModifiedAt())
+            .build();
     }
 }

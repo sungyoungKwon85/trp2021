@@ -22,6 +22,9 @@ public class TripSaveRequest {
     @NotNull
     private LocalDate endAt;
 
+    public TripSaveRequest() {
+    }
+
     @Builder
     public TripSaveRequest(String title, Long cityId, LocalDate startAt, LocalDate endAt) {
         this.title = title;

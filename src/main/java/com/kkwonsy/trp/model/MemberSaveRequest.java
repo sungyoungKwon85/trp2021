@@ -5,15 +5,15 @@ import javax.validation.constraints.NotEmpty;
 import lombok.Getter;
 
 @Getter
-public class CitySaveRequest {
+public class MemberSaveRequest {
 
     @NotEmpty
     private String name;
 
-    public CitySaveRequest() {
+    public MemberSaveRequest() {
     }
 
-    public CitySaveRequest(String name) {
+    public MemberSaveRequest(String name) {
         this.name = name;
     }
 }

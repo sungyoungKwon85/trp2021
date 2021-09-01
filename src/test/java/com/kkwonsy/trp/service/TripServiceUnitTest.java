@@ -17,8 +17,6 @@ import com.kkwonsy.trp.entity.Trip;
 import com.kkwonsy.trp.exception.ErrorCode;
 import com.kkwonsy.trp.exception.TrpException;
 import com.kkwonsy.trp.model.TripSaveRequest;
-import com.kkwonsy.trp.repository.CityRepository;
-import com.kkwonsy.trp.repository.MemberRepository;
 import com.kkwonsy.trp.repository.TripRepository;
 
 import dto.TripResponseDto;
@@ -37,11 +35,15 @@ class TripServiceUnitTest {
     private TripService tripService;
 
     @Mock
+    private MemberService memberService;
+    @Mock
+    private CityService cityService;
+    @Mock
     private TripRepository tripRepository;
-    @Mock
-    private MemberRepository memberRepository;
-    @Mock
-    private CityRepository cityRepository;
+//    @Mock
+//    private MemberRepository memberRepository;
+//    @Mock
+//    private CityRepository cityRepository;
 
     private Member kwon;
     private City seoul;
@@ -95,8 +97,8 @@ class TripServiceUnitTest {
     @Test
     public void saveTrip() throws Exception {
         // given
-        when(memberRepository.findById(anyLong())).thenReturn(Optional.of(kwon));
-        when(cityRepository.findById(anyLong())).thenReturn(Optional.of(seoul));
+        when(memberService.findMemberOrThrow(anyLong())).thenReturn(kwon);
+        when(cityService.findCityOrThrow(anyLong())).thenReturn(seoul);
         when(tripRepository.findByMemberIdAndCityId(anyLong(), anyLong())).thenReturn(Optional.empty());
 
         long id = setId(kwonSeoul);
@@ -111,31 +113,10 @@ class TripServiceUnitTest {
     }
 
     @Test
-    public void saveTrip_when_member_not_found() throws Exception {
-        // given
-        when(memberRepository.findById(anyLong())).thenReturn(Optional.empty());
-
-        // when
-        TrpException trpException = assertThrows(TrpException.class, () -> tripService.saveTrip(1L, request));
-        assertEquals(trpException.getErrorCode(), ErrorCode.MEMBER_NOT_FOUND);
-    }
-
-    @Test
-    public void saveTrip_when_city_not_found() throws Exception {
-        // given
-        when(memberRepository.findById(anyLong())).thenReturn(Optional.of(kwon));
-        when(cityRepository.findById(anyLong())).thenReturn(Optional.empty());
-
-        // when
-        TrpException trpException = assertThrows(TrpException.class, () -> tripService.saveTrip(1L, request));
-        assertEquals(trpException.getErrorCode(), ErrorCode.CITY_NOT_FOUND);
-    }
-
-    @Test
     public void saveTrip_when_member_city_already_found() throws Exception {
         // given
-        when(memberRepository.findById(anyLong())).thenReturn(Optional.of(kwon));
-        when(cityRepository.findById(anyLong())).thenReturn(Optional.of(seoul));
+        when(memberService.findMemberOrThrow(anyLong())).thenReturn(kwon);
+        when(cityService.findCityOrThrow(anyLong())).thenReturn(seoul);
         when(tripRepository.findByMemberIdAndCityId(anyLong(), anyLong())).thenReturn(Optional.of(kwonSeoul));
 
         // when
